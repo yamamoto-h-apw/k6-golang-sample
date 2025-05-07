@@ -1,0 +1,24 @@
+services:
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile.server
+    container_name: go-server
+    ports:
+      - "8080:8080"
+    networks:
+      - testnet
+
+  k6:
+    image: grafana/k6
+    container_name: k6-test
+    depends_on:
+      - server
+    volumes:
+      - ./k6:/scripts
+    networks:
+      - testnet
+    entrypoint: ["k6", "run", "/scripts/loadtest.js"]
+
+networks:
+  testnet:
